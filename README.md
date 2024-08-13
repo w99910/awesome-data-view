@@ -1,4 +1,4 @@
-# Data View
+# Awesome Data View
 
 - Group Function
 ![Group](group.png)

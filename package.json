@@ -1,5 +1,5 @@
 {
-  "name": "data-view",
+  "name": "awesome-data-view",
   "version": "0.0.1",
   "description": "Data View",
   "main": "index.js",
@@ -11,5 +11,17 @@
   "license": "MIT",
   "devDependencies": {
     "vite": "^5.3.5"
-  }
+  },
+  "keywords": [
+    "data-view",
+    "html",
+    "table",
+    "datatable",
+    "data-table",
+    "easy-data",
+    "dataview",
+    "pipelined",
+    "pipeline data",
+    "pipeline-table"
+  ]
 }

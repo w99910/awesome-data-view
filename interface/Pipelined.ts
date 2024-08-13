@@ -1,4 +1,4 @@
-export interface Pipelined {
+export default interface Pipelined {
     handle(data: Array<object> | object): Array<object> | object;
 
     toQuery(): string;
