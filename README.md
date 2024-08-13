@@ -160,7 +160,8 @@ const dummyData = [
         country: "USA"
     },
 ];
-let dataV = new DataView
+import {AwesomeDataView, FilterWhere, SortBy, GroupBy, TruncateCell, Paginate, TableRenderer} from 'awesome-data-view';
+let dataV = new AwesomeDataView
 let filterWhere = new FilterWhere;
 let sortBy = new SortBy
 let groupBy = new GroupBy;
@@ -204,6 +205,7 @@ const updateData = () => {
 let leftFilterBox = document.getElementById('left-filter-box');
 let rightFilterBox = document.getElementById('right-filter-box');
 let footer = document.getElementById('footer');
+
 leftFilterBox.appendChild(groupBy.render(Object.keys(dummyData[0]), function (option) {
     groupBy.column(option)
     updateData()
@@ -218,6 +220,7 @@ leftFilterBox.appendChild(groupBy.render(Object.keys(dummyData[0]), function (op
     border: '1px solid #9d9d9d',
     marginTop: '10px'
 }));
+
 leftFilterBox.appendChild(filterWhere.render({
     color: '#ffffff',
     background: '#323232',
@@ -247,11 +250,14 @@ leftFilterBox.appendChild(sortBy.render(Object.keys(dummyData[0]), function (opt
     border: '1px solid #9d9d9d',
     marginTop: '10px'
 }))
+
+// initialise data
 let d = dummyData.concat(...dummyData.map((datum) => {
     let a = {...datum};
     a.id += 11;
     return a;
 }));
+
 rightFilterBox.appendChild(paginate.render(d.length, tableRenderer.theme.header))
 
 paginate.onChange(async () => {
@@ -261,6 +267,7 @@ paginate.onChange(async () => {
 tableRenderer.onClickCell((...params) => {
     // console.log('cell click', params)
 })
+
 
 tableRenderer.render(await dataV.data(d)
     .process());

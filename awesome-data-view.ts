@@ -1,8 +1,8 @@
 import { reactive, toRaw } from "vue";
-import { Pipelined } from "./interface/Pipelined";
+import Pipelined from "./interface/Pipelined";
 import TableRenderer from "./table-renderer";
 
-export default class DataView {
+export default class AwesomeDataView {
     protected _data: Array<object> | object;
     protected _server: {
         endpoint: null | string;
@@ -13,15 +13,15 @@ export default class DataView {
             };
         };
     } = {
-        endpoint: null,
-        options: {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-                "Accept" : "application/json",
+            endpoint: null,
+            options: {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "Accept": "application/json",
+                },
             },
-        },
-    };
+        };
     protected _columns: Array<object>;
     protected _pipelines: Array<Pipelined> = [];
     protected _options = {
@@ -69,7 +69,7 @@ export default class DataView {
         this._options.compression = options.compression;
     }
 
-    export(data) {}
+    export(data) { }
 
     protected processData() {
         let data = toRaw(this._data);
@@ -84,7 +84,7 @@ export default class DataView {
         this._pipelines.forEach((pipeline, i) => {
             let params = pipeline.toQuery();
 
-            if(!params){
+            if (!params) {
                 return;
             }
 

@@ -1,4 +1,4 @@
-import {Pipelined} from "../interface/Pipelined";
+import Pipelined from "../interface/Pipelined";
 import PopupButton from "../helpers/PopupButton";
 import hexToRGBA from "../helpers/hexToRGB";
 import SetStyle from "../helpers/SetStyle";
@@ -40,7 +40,7 @@ export default class FilterWhere implements Pipelined {
         border: '1px solid #323232',
         transformOrigin: 'center'
     }, onChange: Function) {
-        let {button, div, placeholder} = PopupButton(buttonStyle, popupStyle);
+        let { button, div, placeholder } = PopupButton(buttonStyle, popupStyle);
 
         let icon = `<svg xmlns="http://www.w3.org/2000/svg" style="width:16px;" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-list-filter"><path d="M3 6h18"/><path d="M7 12h10"/><path d="M10 18h4"/></svg>`;
         placeholder.innerHTML = `${icon} Filter`
@@ -383,7 +383,7 @@ export default class FilterWhere implements Pipelined {
         return data;
     }
 
-    toQuery(){
+    toQuery() {
         return '';
     }
 }

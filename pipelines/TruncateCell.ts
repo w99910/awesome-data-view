@@ -1,4 +1,4 @@
-import {Pipelined} from "../interface/Pipelined";
+import Pipelined from "../interface/Pipelined";
 
 type truncate = {
     column: string,
@@ -38,9 +38,9 @@ export default class TruncateCell implements Pipelined {
                     let truncatedValue =
                         value.length > _limitation.limit
                             ? value.substring(
-                                  0,
-                                  Math.min(value.length, _limitation.limit)
-                              ) + _limitation.postfix
+                                0,
+                                Math.min(value.length, _limitation.limit)
+                            ) + _limitation.postfix
                             : value;
                     datum[_limitation.column] = {
                         raw: value,

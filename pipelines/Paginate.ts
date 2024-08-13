@@ -1,4 +1,4 @@
-import {Pipelined} from "../interface/Pipelined";
+import Pipelined from "../interface/Pipelined";
 import PopupButton from "../helpers/PopupButton";
 import SetStyle from "../helpers/SetStyle";
 import PaleColor from "../helpers/PaleColor";

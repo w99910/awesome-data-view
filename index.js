@@ -1,4 +1,4 @@
-import DataView from './data-view';
+import AwesomeDataView from './awesome-data-view';
 import Pipelined from './interface/Pipelined';
 import hexToRGBA from './helpers/hexToRGB';
 import PaleColor from './helpers/PaleColor';
@@ -12,4 +12,4 @@ import SortBy from './pipelines/SortBy';
 import TruncateCell from './pipelines/TruncateCell'
 import TableRenderer from './table-renderer';
 
-export { DataView, TableRenderer, GroupBy, Paginate, SortBy, TruncateCell, FilterWhere, Pipelined, hexToRGBA, PaleColor, PopupButton, SetStyle, Unique }
+export { AwesomeDataView, TableRenderer, GroupBy, Paginate, SortBy, TruncateCell, FilterWhere, Pipelined, hexToRGBA, PaleColor, PopupButton, SetStyle, Unique }

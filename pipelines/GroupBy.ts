@@ -1,8 +1,8 @@
-import {Pipelined} from "../interface/Pipelined";
+import Pipelined from "../interface/Pipelined";
 import PopupButton from "../helpers/PopupButton";
 
 export default class GroupBy implements Pipelined {
-    protected groupByColumn: null|string = null;
+    protected groupByColumn: null | string = null;
     protected prefix: boolean = false;
 
     render(options: Array<string>, onClick: Function, buttonStyle = {
@@ -14,7 +14,7 @@ export default class GroupBy implements Pipelined {
         color: '#000',
         border: '1px solid #323232',
     }) {
-        let {button, toggleVisibility, placeholder, div} = PopupButton(buttonStyle, popupStyle);
+        let { button, toggleVisibility, placeholder, div } = PopupButton(buttonStyle, popupStyle);
 
         let icon = `<svg xmlns="http://www.w3.org/2000/svg" style="width: 16px;" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-grid-3x3"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/></svg>`;
         placeholder.innerHTML = `${icon} Group By: <b>${this.groupByColumn ?? 'None'}</b>`
@@ -80,7 +80,7 @@ export default class GroupBy implements Pipelined {
         return data;
     }
 
-    toQuery(){
+    toQuery() {
         return '';
     }
 }
