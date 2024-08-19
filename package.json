@@ -1,6 +1,6 @@
 {
   "name": "awesome-data-view",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Data View",
   "main": "index.js",
   "scripts": {
@@ -23,5 +23,9 @@
     "pipelined",
     "pipeline data",
     "pipeline-table"
-  ]
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/w99910/awesome-data-view"
+  }
 }

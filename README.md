@@ -273,3 +273,23 @@ tableRenderer.render(await dataV.data(d)
     .process());
 // (new Exporter).xlsx(['test','d'])
 ```
+
+
+
+- ## Truncate Cells
+
+```js
+import {TruncateCell, AwesomeDataView} from 'awesome-data-view'
+
+let truncateCell = new TruncateCell;
+
+let limit = 20;
+let postfix = '***'
+truncateCell.all(limit, postfix)
+
+let dataV = new AwesomeDataView;
+
+dataV.pipeline(truncateCell).data([{
+    ...
+}]).process()
+```

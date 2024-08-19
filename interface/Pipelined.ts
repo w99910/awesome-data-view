@@ -1,5 +1,5 @@
-export default interface Pipelined {
-    handle(data: Array<object> | object): Array<object> | object;
+export default abstract class Pipelined {
+    abstract handle(data: Array<object> | object): Array<object> | object;
 
-    toQuery(): string;
+    abstract toQuery(): string;
 }

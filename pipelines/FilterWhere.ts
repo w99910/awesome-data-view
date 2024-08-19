@@ -366,11 +366,9 @@ export default class FilterWhere implements Pipelined {
         if (this._conditions.length === 0) {
             return data;
         }
-        console.log(this._conditions)
         if (data instanceof Array) {
             return data.filter(this.build());
         }
-
 
         Object.keys(data).forEach((key) => {
             let values = data[key];

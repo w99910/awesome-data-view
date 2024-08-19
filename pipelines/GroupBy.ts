@@ -48,6 +48,7 @@ export default class GroupBy implements Pipelined {
     }
 
     handle(data: Array<object> | object): Array<object> | object {
+
         if (!this.groupByColumn) {
             return data;
         }
@@ -55,6 +56,15 @@ export default class GroupBy implements Pipelined {
             let groups = {};
             data.forEach((datum) => {
                 let value = datum[this.groupByColumn!];
+
+                if (!value) {
+                    value = 'NA';
+                }
+
+                if (value.raw) {
+                    value = value.display;
+                }
+
                 if (this.prefix) {
                     value = this.groupByColumn + ':' + value;
                 }
@@ -71,9 +81,14 @@ export default class GroupBy implements Pipelined {
 
         Object.keys(data).forEach((key) => {
             let values = data[key];
+            if (values instanceof Object) {
+                values = Object.values(values);
+            }
+
             if (!(values instanceof Array)) {
                 return;
             }
+
             data[key] = this.handle(values);
         })
 
