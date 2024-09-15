@@ -79,22 +79,29 @@ export default class AwesomeDataView {
         return data;
     }
 
-    protected async handleServerSide() {
-        let query = this._server.endpoint + "?";
+    query() {
+        let _q = '';
         this._pipelines.forEach((pipeline, i) => {
             let params = pipeline.toQuery();
-
-            if (!params) {
+            if (params.trim().length === 0) {
                 return;
             }
 
-            query += params;
-
-            if (i !== this._pipelines.length - 1) {
-                query += "&";
+            if (i !== 0 && _q) {
+                _q += "&";
             }
+
+            _q += params;
+
+
         });
-        console.log(query)
+        return _q;
+    }
+
+    protected async handleServerSide() {
+        let query = this._server.endpoint + "?";
+
+        // console.log(query)
         // try {
         //     const response = await fetch(query, this._server.options);
         //     if (!response.ok) {
@@ -108,6 +115,7 @@ export default class AwesomeDataView {
     }
 
     async process() {
+        console.log(this.query())
         if (this._server.endpoint) {
             return await this.handleServerSide();
         }

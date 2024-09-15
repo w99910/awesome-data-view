@@ -363,6 +363,7 @@ export default class FilterWhere implements Pipelined {
     }
 
     handle(data: Array<object> | object): Array<object> | object {
+
         if (this._conditions.length === 0) {
             return data;
         }
@@ -382,6 +383,12 @@ export default class FilterWhere implements Pipelined {
     }
 
     toQuery() {
-        return '';
+        if (this._conditions.length === 0) {
+            return '';
+        }
+        const params = new URLSearchParams({
+            filter: JSON.stringify(this._conditions)
+        });
+        return params.toString();
     }
 }

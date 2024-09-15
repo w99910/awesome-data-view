@@ -196,6 +196,10 @@ export default class Paginate implements Pipelined {
     }
 
     toQuery() {
-        return "";
+        const params = new URLSearchParams({
+            offset: ((this._currentPageIndex - 1) * this._pageSize).toString(),
+            limit: this._pageSize.toString(),
+        });
+        return params.toString();
     }
 }

@@ -293,3 +293,6 @@ dataV.pipeline(truncateCell).data([{
     ...
 }]).process()
 ```
+
+- ## Add new column
+

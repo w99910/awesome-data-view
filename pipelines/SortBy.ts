@@ -83,6 +83,13 @@ export default class SortBy implements Pipelined {
     }
 
     toQuery() {
-        return "";
+        if (!this.sortByColumn) {
+            return "";
+        }
+        const params = new URLSearchParams({
+            sort: this.sortByColumn.toString(),
+            desc: this.isDescending.toString(),
+        });
+        return params.toString();
     }
 }

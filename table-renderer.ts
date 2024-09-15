@@ -1,4 +1,3 @@
-import { getEventListeners } from "events";
 import hexToRGBA from "./helpers/hexToRGB";
 import { NotFoundIllustration } from "./helpers/icons";
 import PaleColor from "./helpers/PaleColor";
@@ -99,6 +98,16 @@ const darkTheme: theme = {
     },
 };
 
+type Column = {
+    index?: number,
+    header: HTMLElement | string,
+    html?: HTMLElement,
+    text?: string,
+    renderer?: Function,
+    onClick?: Function,
+    preventExpand?: boolean,
+}
+
 export default class TableRenderer {
     public table: HTMLTableElement;
 
@@ -122,8 +131,17 @@ export default class TableRenderer {
         onClickHeader?: Function;
     } = {};
 
+    protected _extraColumns: Array<Column> = [];
+
+    protected _hiddenColumns: Array<number | string> = [];
+
     protected constructor() {
         this.theme = defaultTheme;
+    }
+
+    disableExpandable() {
+        this._options.expandable = false;
+        return this;
     }
 
     onClickRow(fn: Function) {
@@ -145,6 +163,21 @@ export default class TableRenderer {
         let instance = new TableRenderer();
         instance.container = container;
         return instance;
+    }
+
+    extraColumns(columns: Array<Column>) {
+        this._extraColumns = columns;
+        return this;
+    }
+
+    addColumn(column: Column) {
+        this._extraColumns.push(column);
+        return this;
+    }
+
+    hiddenColumns(columns: Array<string | number>) {
+        this._hiddenColumns = columns;
+        return this;
     }
 
     lightTheme() {
@@ -226,7 +259,8 @@ export default class TableRenderer {
     ) {
         if (data instanceof Array) {
             data.forEach((datum, i) => {
-                this.renderRow(datum, i, i % 2 === 0, i === data.length - 1);
+                let attributeNames = headers.map((header) => header.toString());
+                this.renderRow(datum, i, i % 2 === 0, i === data.length - 1, attributeNames);
             });
         } else {
             Object.keys(data).forEach((name) => {
@@ -250,7 +284,16 @@ export default class TableRenderer {
             tr.appendChild(th);
         }
 
-        headers.forEach((header) => {
+        this._extraColumns.forEach((extraColumn, i) => {
+            let index = extraColumn.index ?? this.headers.length + i;
+            headers.splice(index, 0, extraColumn.header);
+        })
+
+        headers.forEach((header, i) => {
+            if (this._hiddenColumns.includes(header.toString()) || this._hiddenColumns.includes(i)) {
+                return;
+            }
+
             let th = document.createElement("th");
             th.style.textTransform = "capitalize";
             Object.keys(this.theme.header).forEach((attribute) => {
@@ -270,6 +313,7 @@ export default class TableRenderer {
             // th.style.top = '0'
             tr.appendChild(th);
         });
+
         this.table.appendChild(tr);
     }
 
@@ -299,7 +343,27 @@ export default class TableRenderer {
         index: number,
         shouldReduceOpacity = false,
         isLastIndex = false,
+        attributeNames: null | Array<string> = null,
     ) {
+        attributeNames ??= Object.keys(row);
+        // append extra columns
+        if (this._extraColumns.length > 0) {
+            let t = {};
+            // this._extraColumns.forEach((col, i) => {
+            //     let index = col.index ?? this.headers.length - 1 + i;
+            //     attributeNames!.splice(index, 0, col.header.toString())
+            // });
+            attributeNames.forEach((attribute, i) => {
+                let extraColumn = this._extraColumns.filter((col) => col.header.toString() === attribute)[0];
+                if (extraColumn) {
+                    t[attribute] = extraColumn.html ?? extraColumn.text ?? extraColumn.renderer!(row);
+                    return;
+                }
+                t[attribute] = row[attribute];
+            })
+            row = t;
+        }
+
         let tr = document.createElement("tr");
         tr.setAttribute('data-index', index.toString())
         let onClickCell = this.listeners.onClickCell;
@@ -373,7 +437,11 @@ export default class TableRenderer {
                 td.colSpan = this.headers.length + 1;
                 let table = document.createElement("table");
                 table.style.width = "100%";
-                Object.keys(row).forEach((attribute) => {
+                attributeNames.forEach((attribute, i) => {
+                    let extraCol = this._extraColumns.filter((col) => col.header.toString() === attribute)[0]
+                    if (this._hiddenColumns.includes(attribute) || this._hiddenColumns.includes(i) || (extraCol && extraCol.preventExpand)) {
+                        return;
+                    }
                     let tr = document.createElement("tr");
                     tr.appendChild(addTd(attribute));
                     tr.appendChild(addTd(row[attribute]));
@@ -398,7 +466,10 @@ export default class TableRenderer {
             tr.appendChild(td);
         }
 
-        Object.keys(row).forEach((attribute) => {
+        attributeNames.forEach((attribute, i) => {
+            if (this._hiddenColumns.includes(attribute) || this._hiddenColumns.includes(i)) {
+                return;
+            }
             let td = document.createElement("td");
             Object.keys(this.theme.cell).forEach((attribute) => {
                 td.style[attribute] = this.theme.cell[attribute];
@@ -434,18 +505,30 @@ export default class TableRenderer {
                 td.title = title;
             }
 
+            const parseNormalText = (val) => {
+                // try {
+                //     let newVal = new Date(val);
+                //     if (!isNaN(newVal.getTime())) {
+                //         val = newVal.toLocaleString()
+                //     }
+                // } catch (e) {
+
+                // }
+
+                return val ?? 'NA';
+            }
+
             if (display instanceof HTMLElement) {
-                td.appendChild(display.cloneNode(true));
+                td.appendChild(display);
             } else if (display instanceof Function) {
                 let output = display(row, index, shouldReduceOpacity, isLastIndex);
                 if (output instanceof HTMLElement) {
                     td.appendChild(output);
                 } else {
-                    td.innerHTML = output ?? 'NA';
+                    td.innerHTML = parseNormalText(output);
                 }
             } else {
-                td.innerHTML = display ?? 'NA';
-
+                td.innerHTML = parseNormalText(display);
             }
 
             td.addEventListener("click", () => {
