@@ -115,7 +115,6 @@ export default class AwesomeDataView {
     }
 
     async process() {
-        console.log(this.query())
         if (this._server.endpoint) {
             return await this.handleServerSide();
         }
