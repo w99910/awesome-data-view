@@ -63,8 +63,9 @@ export default class SortBy implements Pipelined {
             return data;
         }
         let order = this.isDescending ? -1 : 1;
+        let getVal = (item: string | Object) => typeof item === 'object' && item.raw ? item.raw : item;
         let orderFn = (itemA: object, itemB: object) =>
-            itemA[this.sortByColumn!] >= itemB[this.sortByColumn!]
+            getVal(itemA[this.sortByColumn!]) >= getVal(itemB[this.sortByColumn!])
                 ? order
                 : -1 * order;
         if (data instanceof Array) {
