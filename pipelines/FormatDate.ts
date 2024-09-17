@@ -25,9 +25,9 @@ export default class FormatDate implements Pipelined {
             return data;
         }
 
-        let formatDate = (data: object, column: string, renderer?: Function) => {
+        let _formatDate = (data: object, column: string, renderer?: Function) => {
             let raw = data[column];
-            if (!raw) return raw;
+            if (!raw) return [raw, null];
 
             let value = raw;
             if (value.raw) {
@@ -36,7 +36,7 @@ export default class FormatDate implements Pipelined {
 
             value = new Date(value);
 
-            if (isNaN(value.getTime())) return data[column];
+            if (isNaN(value.getTime())) return [data[column], null];
 
             return [raw, renderer ? renderer(value) : value.toLocaleString()];
         }
@@ -44,7 +44,7 @@ export default class FormatDate implements Pipelined {
         if (data instanceof Array) {
             return data.map((datum) => {
                 this.dateColumns.forEach((dateColumn) => {
-                    let [raw, formattedValue] = formatDate(datum, dateColumn.column, dateColumn.renderer);
+                    let [raw, formattedValue] = _formatDate(datum, dateColumn.column, dateColumn.renderer);
                     if (!formattedValue) return;
                     datum[dateColumn.column] = {
                         raw: raw,
