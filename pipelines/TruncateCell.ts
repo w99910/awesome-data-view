@@ -27,6 +27,7 @@ export default class TruncateCell implements Pipelined {
             limit: limit,
             postfix: postfix,
         }]
+        return this;
     }
 
     handle(data: Array<object> | object): Array<object> | object {
@@ -35,7 +36,12 @@ export default class TruncateCell implements Pipelined {
         }
 
         let getTruncatedValue = (data: object, column: string, limit: number, postfix: string) => {
-            let value = data[column].toString();
+            let value = data[column];
+
+            if (!isNaN(parseFloat(value))) {
+                return value;
+            }
+
             return value.length > limit
                 ? value.substring(
                     0,
@@ -51,7 +57,6 @@ export default class TruncateCell implements Pipelined {
                         Object.keys(datum).forEach((column) => {
                             let value = datum[column];
                             if (!value || typeof value === 'object') return;
-                            value = value.toString();
                             datum[column] = {
                                 raw: value,
                                 display: getTruncatedValue(datum, column, _limitation.limit, _limitation.postfix ?? '...')
@@ -88,6 +93,6 @@ export default class TruncateCell implements Pipelined {
     }
 
     toQuery() {
-        return "";
+        return {};
     }
 }

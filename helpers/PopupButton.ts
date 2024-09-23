@@ -1,19 +1,18 @@
 import anime from "animejs/lib/anime.es";
-import {onClickOutside} from "js-utils";
 
-export default function (buttonStyle:{
+export default function (buttonStyle: {
     [key: string]: any;
 } = {
-    background: 'transparent',
-    color: '#000',
-    border: '1px solid #323232',
-}, popupStyle:{
-    [key: string]: any;
-} = {
-    background: 'white',
-    color: '#000',
-    border: '1px solid #323232',
-}) {
+        background: 'transparent',
+        color: '#000',
+        border: '1px solid #323232',
+    }, popupStyle: {
+        [key: string]: any;
+    } = {
+            background: 'white',
+            color: '#000',
+            border: '1px solid #323232',
+        }) {
     const customEvent = new CustomEvent("click-outside");
     let button = document.createElement('button');
     button.className = "relative";
@@ -70,7 +69,7 @@ export default function (buttonStyle:{
     }
 
     button.addEventListener('click', function () {
-        if(open){
+        if (open) {
             return;
         }
         setTimeout(() => {
@@ -80,11 +79,28 @@ export default function (buttonStyle:{
 
     button.appendChild(div);
 
-    onClickOutside(div, function (e) {
-        if (open) {
-            toggleVisibility();
+    document.addEventListener("click", (e) => {
+        if (e instanceof PointerEvent && e.pointerId < 0) {
+            // skip spacebar trigger click event
+            return;
         }
-    })
+        const elementRect = div.getBoundingClientRect();
+        let targetElement = e.target as HTMLElement;
+        const targetElementRect = targetElement.getBoundingClientRect();
+        if (
+            targetElementRect.left < elementRect.left ||
+            targetElementRect.right > elementRect.right ||
+            targetElementRect.top < elementRect.top ||
+            targetElementRect.bottom > elementRect.bottom
+        ) {
+            if (open) {
+                toggleVisibility();
+            }
+        }
+        return;
+    });
 
-    return {button, toggleVisibility, placeholder, div};
+    const isOpen = () => open;
+
+    return { button, toggleVisibility, placeholder, div, isOpen };
 }

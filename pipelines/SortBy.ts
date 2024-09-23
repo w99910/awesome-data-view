@@ -32,7 +32,7 @@ export default class SortBy implements Pipelined {
 
         options.forEach((option, i) => {
             let btn = document.createElement("button");
-            btn.innerText = option;
+            btn.innerText = option ?? 'None';
             btn.className = "px-8 py-3 hover:opacity-80";
             btn.addEventListener("click", (e) => {
                 e.stopPropagation();
@@ -62,8 +62,15 @@ export default class SortBy implements Pipelined {
         if (!this.sortByColumn) {
             return data;
         }
+        // console.log(data)
         let order = this.isDescending ? -1 : 1;
-        let getVal = (item: string | Object) => typeof item === 'object' && item.raw ? item.raw : item;
+        let getVal = (item: string | Object) => {
+            let val = typeof item === 'object' && item.raw ? item.raw : item;
+            if (isNaN(parseFloat(val))) {
+                return val;
+            }
+            return parseFloat(val)
+        };
         let orderFn = (itemA: object, itemB: object) =>
             getVal(itemA[this.sortByColumn!]) >= getVal(itemB[this.sortByColumn!])
                 ? order
@@ -85,12 +92,15 @@ export default class SortBy implements Pipelined {
 
     toQuery() {
         if (!this.sortByColumn) {
-            return "";
+            return {};
         }
-        const params = new URLSearchParams({
-            sort: this.sortByColumn.toString(),
-            desc: this.isDescending.toString(),
-        });
-        return params.toString();
+        // const params = new URLSearchParams({
+        //     order_by: this.sortByColumn.toString(),
+        //     order_desc: (this.isDescending ? 1 : 0).toString(),
+        // });
+        return {
+            order_by: this.sortByColumn.toString(),
+            order_desc: (this.isDescending ? 1 : 0).toString(),
+        };
     }
 }

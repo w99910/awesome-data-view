@@ -40,7 +40,7 @@ export default class FilterWhere implements Pipelined {
         border: '1px solid #323232',
         transformOrigin: 'center'
     }, onChange: Function) {
-        let { button, div, placeholder } = PopupButton(buttonStyle, popupStyle);
+        let { button, div, placeholder, isOpen } = PopupButton(buttonStyle, popupStyle);
 
         let icon = `<svg xmlns="http://www.w3.org/2000/svg" style="width:16px;" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-list-filter"><path d="M3 6h18"/><path d="M7 12h10"/><path d="M10 18h4"/></svg>`;
         placeholder.innerHTML = `${icon} Filter`
@@ -49,6 +49,12 @@ export default class FilterWhere implements Pipelined {
 
         button.addEventListener('click-outside', () => {
             onChange();
+        })
+
+        document.addEventListener('keydown', (e) => {
+            if ((e.key === 'Enter' || e.key === 'Escape') && isOpen()) {
+                onChange();
+            }
         })
 
         return button;
@@ -363,14 +369,12 @@ export default class FilterWhere implements Pipelined {
     }
 
     handle(data: Array<object> | object): Array<object> | object {
-
         if (this._conditions.length === 0) {
             return data;
         }
         if (data instanceof Array) {
             return data.filter(this.build());
         }
-
         Object.keys(data).forEach((key) => {
             let values = data[key];
             if (!values.forEach) {
@@ -378,17 +382,18 @@ export default class FilterWhere implements Pipelined {
             }
             data[key] = values.filter(this.build())
         })
-
         return data;
     }
 
     toQuery() {
         if (this._conditions.length === 0) {
-            return '';
+            return {};
         }
-        const params = new URLSearchParams({
-            filter: JSON.stringify(this._conditions)
-        });
-        return params.toString();
+        // const params = new URLSearchParams({
+        //     filter: JSON.stringify(this._conditions)
+        // });
+        return {
+            filter: this._conditions,
+        };
     }
 }

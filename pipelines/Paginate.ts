@@ -100,6 +100,7 @@ export default class Paginate implements Pipelined {
     }
 
     protected buildButtons() {
+        this.buttonsDiv.innerHTML = '';
         if (this._buttonsLimit > this._totalItems / this._pageSize) {
             this._buttonsLimit = Math.ceil(this._totalItems / this._pageSize);
         }
@@ -126,8 +127,10 @@ export default class Paginate implements Pipelined {
         // Build page indexes
         let start = Math.max(1, this._currentPageIndex - 2); // Adjust to show 2 previous pages
 
+        let finalIndex = Math.ceil(this._totalItems / this._pageSize);
+
         const end = Math.min(
-            Math.ceil(this._totalItems / this._pageSize),
+            finalIndex,
             start + this._buttonsLimit - 1
         ); // Limit to totalItems
 
@@ -135,7 +138,30 @@ export default class Paginate implements Pipelined {
             start = end - this._buttonsLimit + 1;
         }
 
+        let currentButtonIndexes: Array<number | null> = [];
+
         for (let i = start; i <= end; i++) {
+            currentButtonIndexes.push(i);
+        }
+
+
+        if (!currentButtonIndexes.includes(1)) {
+            currentButtonIndexes.unshift(null);
+            currentButtonIndexes.unshift(1);
+        }
+
+        if (!currentButtonIndexes.includes(finalIndex)) {
+            currentButtonIndexes.push(null)
+            currentButtonIndexes.push(finalIndex);
+        }
+
+        currentButtonIndexes.forEach((i) => {
+            if (!i) {
+                let span = document.createElement('span');
+                span.innerText = '...';
+                this.buttonsDiv.appendChild(span);
+                return;
+            }
             let btn = this.buildButton(() => {
                 this._currentPageIndex = i;
                 btn.style.background = PaleColor(
@@ -154,8 +180,7 @@ export default class Paginate implements Pipelined {
                 );
             }
             this.buttonsDiv.appendChild(btn);
-        }
-
+        })
         this.buttonsDiv.appendChild(nextButton);
     }
 
@@ -186,20 +211,37 @@ export default class Paginate implements Pipelined {
     }
 
     handle(data: Array<object> | object): Array<object> | object {
+        // if(this.data)
+
         let start = Math.max(0, this._currentPageIndex - 1) * this._pageSize;
         let end = Math.min(this._totalItems, start + this._pageSize);
         if (data instanceof Array) {
+            if (data.length !== this._totalItems) {
+                this._totalItems = data.length;
+                this.buildButtons();
+            }
             return data.slice(start, end);
         }
+        let t = {};
 
-        return data;
+        Object.keys(data).forEach((key, i) => {
+            if (i < start || i > end) {
+                return;
+            }
+            t[key] = data[key]
+        });
+
+        return t;
     }
 
     toQuery() {
-        const params = new URLSearchParams({
+        // const params = new URLSearchParams({
+        //     offset: ((this._currentPageIndex - 1) * this._pageSize).toString(),
+        //     limit: this._pageSize.toString(),
+        // });
+        return {
             offset: ((this._currentPageIndex - 1) * this._pageSize).toString(),
             limit: this._pageSize.toString(),
-        });
-        return params.toString();
+        };
     }
 }

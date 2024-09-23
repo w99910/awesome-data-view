@@ -10,8 +10,9 @@ export default class AwesomeDataView {
             method: string;
             headers: {
                 [key: string]: any;
-            };
-        };
+            }
+        },
+        onPrepare?: null | Function,
     } = {
             endpoint: null,
             options: {
@@ -21,6 +22,7 @@ export default class AwesomeDataView {
                     "Accept": "application/json",
                 },
             },
+            onPrepare: null,
         };
     protected _columns: Array<object>;
     protected _pipelines: Array<Pipelined> = [];
@@ -42,6 +44,11 @@ export default class AwesomeDataView {
         if (options) {
             this._server.options = options;
         }
+        return this;
+    }
+
+    onPrepareQuery(fn: Function) {
+        this._server.onPrepare = fn;
         return this;
     }
 
@@ -81,37 +88,36 @@ export default class AwesomeDataView {
 
     query() {
         let _q = '';
+        let body = {};
         this._pipelines.forEach((pipeline, i) => {
             let params = pipeline.toQuery();
-            if (params.trim().length === 0) {
+            if (!params) {
                 return;
             }
-
-            if (i !== 0 && _q) {
-                _q += "&";
-            }
-
-            _q += params;
-
-
+            body = { ...body, ...params }
         });
-        return _q;
+
+        if (this._server.onPrepare) {
+            body = this._server.onPrepare(body);
+        }
+
+        body = new URLSearchParams(body);
+
+        return _q + '&' + body;
     }
 
     protected async handleServerSide() {
-        let query = this._server.endpoint + "?";
-
-        // console.log(query)
-        // try {
-        //     const response = await fetch(query, this._server.options);
-        //     if (!response.ok) {
-        //         throw new Error(`HTTP error! status: ${response.status}`);
-        //     }
-        //     return response.json(); // Or text() for plain text
-        // } catch (error) {
-        //     console.error("Fetch Error:", error);
-        //     throw error; // Rethrow for error handling elsewhere
-        // }
+        let query = this._server.endpoint + "?" + this.query();
+        try {
+            const response = await fetch(query, this._server.options);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json(); // Or text() for plain text
+        } catch (error) {
+            console.error("Fetch Error:", error);
+            throw error; // Rethrow for error handling elsewhere
+        }
     }
 
     async process() {

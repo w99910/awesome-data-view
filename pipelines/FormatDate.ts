@@ -67,6 +67,6 @@ export default class FormatDate implements Pipelined {
     }
 
     toQuery() {
-        return "";
+        return {};
     }
 }

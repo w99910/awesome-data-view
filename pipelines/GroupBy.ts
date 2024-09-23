@@ -21,14 +21,14 @@ export default class GroupBy implements Pipelined {
 
         options.forEach((option, i) => {
             let btn = document.createElement('button');
-            btn.innerText = option;
+            btn.innerText = option ?? 'None';
             btn.className = 'px-8 py-3';
             btn.addEventListener('click', function (e) {
                 e.stopPropagation();
                 e.preventDefault();
                 toggleVisibility();
                 onClick(option, i);
-                button.querySelector('b')!.innerText = `${option}`
+                button.querySelector('b')!.innerText = `${option ?? "None"}`
             });
             if (i !== options.length - 1) {
                 btn.classList.add('border-b')
@@ -96,6 +96,6 @@ export default class GroupBy implements Pipelined {
     }
 
     toQuery() {
-        return '';
+        return {};
     }
 }
